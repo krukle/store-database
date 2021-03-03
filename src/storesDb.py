@@ -7,7 +7,7 @@ import random
 # Connection info
 cnx = mysql.connector.connect(user='root', password='dGX!f&^HTo5h36',
                                host='127.0.0.1')
-cursor  = cnx.cursor()
+cursor  = cnx.cursor(dictionary=True)
 DB_NAME = 'StoreDatabase'
 
 # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
@@ -83,6 +83,14 @@ def generateOrdersTable(AMOUNT_OF_ORDERS, MAX_ARTICLES_BOUGHT):
                     Values("{order}", "{article}", "{randomOneToFive()}")
                 """)
 
+def viewCustomerOrders():
+
+    cursor.execute(f"""
+        CREATE VIEW CustomerOrders AS 
+        SELECT * FROM Customers 
+        INNER JOIN Orders ON Customers.customerid=Orders.customer;
+        """)
+
 # Creates tables for 'Stores' database.
 def createTables():
     # Tables are stored in a dictionary where, tablename becomes the key and
@@ -93,12 +101,12 @@ def createTables():
     # Personal id as primary key.
     TABLES['Customers'] = ("""
         CREATE TABLE `Customers`(
-            `id` INT NOT NULL AUTO_INCREMENT, 
+            `customerid` INT NOT NULL AUTO_INCREMENT, 
             `firstname` varchar(50), 
             `lastname` varchar(50), 
             `gender` varchar(1), 
             `age` TINYINT, 
-            PRIMARY KEY (`id`)) 
+            PRIMARY KEY (`customerid`)) 
         ENGINE=InnoDB""")
 
     # The Articles table
@@ -106,20 +114,20 @@ def createTables():
     # Article id gets auto incremented.
     TABLES['Articles'] = ("""
         CREATE TABLE `Articles`(
-            `id` INT NOT NULL AUTO_INCREMENT, 
+            `articleid` INT NOT NULL AUTO_INCREMENT, 
             `name` varchar(100), 
             `price` TINYINT, 
-            PRIMARY KEY (`id`)) 
+            PRIMARY KEY (`articleid`)) 
         ENGINE=InnoDB""")
 
     # The Stores table
     # Organisation id as primary key.
     TABLES['Stores'] = ("""
         CREATE TABLE `Stores`(
-            `id` INT NOT NULL AUTO_INCREMENT, 
+            `storeid` INT NOT NULL AUTO_INCREMENT, 
             `name` varchar(250), 
             `address` varchar(250), 
-            PRIMARY KEY (`id`)) 
+            PRIMARY KEY (`storeid`)) 
         ENGINE=InnoDB""")
 
     # The Orders table. 
@@ -128,14 +136,14 @@ def createTables():
     # Entry for Order detail
     TABLES['Orders'] = ("""
         CREATE TABLE `Orders`(
-            `id` INT NOT NULL AUTO_INCREMENT, 
+            `orderid` INT NOT NULL AUTO_INCREMENT, 
             `store` INT NOT NULL, 
             `customer` INT NOT NULL, 
-            PRIMARY KEY (`id`), 
+            PRIMARY KEY (`orderid`), 
             FOREIGN KEY (`customer`)
-                REFERENCES `Customers` (`id`),
+                REFERENCES `Customers` (`customerid`),
             FOREIGN KEY (`store`) 
-                REFERENCES `Stores` (`id`)) 
+                REFERENCES `Stores` (`storeid`)) 
         ENGINE=InnoDB""")
 
     # Table for OrdersArticles
@@ -146,15 +154,15 @@ def createTables():
     # connected OrderArticles are removed. 
     TABLES['OrdersArticles'] = ("""
         CREATE TABLE `OrdersArticles`(
-            `id` INT NOT NULL AUTO_INCREMENT, 
+            `ordersarticlesid` INT NOT NULL AUTO_INCREMENT, 
             `order` INT NOT NULL, 
             `article` INT NOT NULL, 
             `amount` INT NOT NULL, 
-            PRIMARY KEY (`id`),
+            PRIMARY KEY (`ordersarticlesid`),
             FOREIGN KEY (`order`) 
-                REFERENCES `Orders` (`id`),
+                REFERENCES `Orders` (`orderid`),
             FOREIGN KEY (`article`)
-                REFERENCES `Articles` (`id`)) 
+                REFERENCES `Articles` (`articleid`)) 
         ENGINE=InnoDB""")
     return TABLES
 
@@ -187,5 +195,8 @@ except mysql.connector.Error as err:
         exit(1)
 
 cnx.commit()
+
+viewCustomerOrders()
+
 cursor.close()
 cnx.close()
