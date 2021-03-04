@@ -10,8 +10,8 @@ cnx = mysql.connector.connect(user='root', password='dGX!f&^HTo5h36',
 cursor  = cnx.cursor(dictionary=True)
 DB_NAME = 'StoreDatabase'
 
-# Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
 def create_database(cursor, DB_NAME):
+    # Source: https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
     try:
         cursor.execute(
             "CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
@@ -19,9 +19,9 @@ def create_database(cursor, DB_NAME):
         print("Failed creating database: {}".format(err))
         exit(1)
 
-# Function to create a list from .csv-file.
-# Source: https://docs.python.org/3/library/csv.html
 def createList(file):
+    # Function to create a list from .csv-file.
+    # Source: https://docs.python.org/3/library/csv.html
     table = []
     with open(file, newline='') as csvfile:
         column = csv.reader(csvfile)
@@ -29,41 +29,41 @@ def createList(file):
             table.append(row)
     return table
 
-# Fill Article table from list
-# Skipping first entry as we dont want headlines as entries.
 def fillArticleTable(articleList):
+    # Fill Article table from list
+    # Skipping first entry as we dont want headlines as entries.
     for i in articleList[1:]:
         cursor.execute(f"""
         INSERT INTO 
             `Articles` (`name`, `price`) 
             VALUES("{i[0]}", "{i[1]}")""")
-
-# Fill Customer table from list
-# Skipping first entry as we dont want headlines as entries.
 def fillCustomerTable(customerList):
+    # Fill Customer table from list
+    # Skipping first entry as we dont want headlines as entries.
     for i in customerList[1:]:
         cursor.execute(f"""
         INSERT INTO 
             `Customers` (`firstname`, `lastname`, `gender`, `age`) 
             VALUES("{i[0]}", "{i[1]}", "{i[2]}", "{i[3]}")""")
 
-# Fill Store table from list
-# Skipping first entry as we dont want headlines as entries.
 def fillStoreTable(storeList):
+    # Fill Store table from list
+    # Skipping first entry as we dont want headlines as entries.
     for i in storeList[1:]:
         cursor.execute(f"""
         INSERT INTO 
             `Stores` (`name`, `address`) 
             VALUES("{i[0]}", "{i[1]}")""")
 
-# Generates a random number between 1-5 where 1 is the most usual outcome.
 def randomOneToFive():
+    # Generates a random number between 1-5 where 1 is the most usual outcome.
     n = random.randint(1, 10)
     if n > 5:
         n = 1
     return n
 
 def generateOrdersTable(AMOUNT_OF_ORDERS, MAX_ARTICLES_BOUGHT):
+    # Randomly generates orders to fill up `Orders` and `OrdersArticles`.
     for order in range(1, AMOUNT_OF_ORDERS+1):
         maxArticles = random.randint(1, MAX_ARTICLES_BOUGHT)
         customer = random.randint(1, 150)
@@ -84,6 +84,7 @@ def generateOrdersTable(AMOUNT_OF_ORDERS, MAX_ARTICLES_BOUGHT):
                 """)
 
 def viewOrdersArticles():
+    # Creates a view for easier access between orders and articles.
     cursor.execute("""
         CREATE VIEW `ordersandarticles` AS 
             SELECT * FROM `Orders` 
@@ -91,36 +92,8 @@ def viewOrdersArticles():
             INNER JOIN `Articles` ON OrdersArticles.article=Articles.articleid;
         """)
 
-def queryAvgAge():
-    cursor.execute("""
-        SELECT AVG(Customers.age), Stores.name 
-        FROM Customers 
-        INNER JOIN ordersandarticles 
-        ON customerid=ordersandarticles.customer 
-        INNER JOIN Stores 
-        ON ordersandarticles.store=Stores.storeid 
-        GROUP BY Stores.name 
-        ORDER BY AVG(Customers.age);
-        """)
-
-def queryStores():
-    cursor.execute("""
-        SELECT name, address 
-        FROM Stores 
-        ORDER BY name;""")
-
-def queryCustomerCount():
-    cursor.execute("""
-        SELECT COUNT(customer), Stores.name 
-        FROM ordersandarticles 
-        INNER JOIN Stores 
-        ON ordersandarticles.store=Stores.storeid 
-        GROUP BY Stores.name 
-        ORDER BY COUNT(customer);
-        """)
-
-# Creates tables for 'Stores' database.
 def createTables():
+    # Creates tables for 'Stores' database.
     # Tables are stored in a dictionary where, tablename becomes the key and
     # 'output' becomes the value.
     TABLES = {}
@@ -194,12 +167,7 @@ def createTables():
         ENGINE=InnoDB""")
     return TABLES
 
-TABLES = createTables()
-
-customers = createList('docs/customers.csv')
-articles = createList('docs/articles.csv')
-stores = createList('docs/stores.csv')
-
+# Tries to USE Database. If impossible, creates database instead. 
 try:
     cursor.execute("USE {}".format(DB_NAME))
 except mysql.connector.Error as err:
@@ -208,25 +176,28 @@ except mysql.connector.Error as err:
         create_database(cursor, DB_NAME)
         print("Database {} created successfully.".format(DB_NAME))
         cnx.database = DB_NAME
-        
+
+        TABLES = createTables()
+
         for table_name in TABLES:
             table_description = TABLES[table_name]
             print("Creating table {}: ".format(table_name))
             cursor.execute(table_description)
-        
+
+        customers = createList('docs/customers.csv')
+        articles = createList('docs/articles.csv')
+        stores = createList('docs/stores.csv')      
+
         fillStoreTable(stores)
         fillCustomerTable(customers)
         fillArticleTable(articles)
+        
         generateOrdersTable(200, 10)
+        viewOrdersArticles()
     else:
         print(err)
         exit(1)
 
 cnx.commit()
-
-queryCustomerCount()
-print(f"{'Column 1':10}\t{'Column 2':10}")
-for i in cursor:
-    print(f"{i['COUNT(customer)']:10}\t{i['name']:10}")
 cursor.close()
 cnx.close()
