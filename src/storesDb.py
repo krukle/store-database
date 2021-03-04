@@ -66,8 +66,8 @@ def randomOneToFive():
 def generateOrdersTable(AMOUNT_OF_ORDERS, MAX_ARTICLES_BOUGHT):
     for order in range(1, AMOUNT_OF_ORDERS+1):
         maxArticles = random.randint(1, MAX_ARTICLES_BOUGHT)
-        customer = random.randint(1, 1000)
-        store    = random.randint(1, 20)
+        customer = random.randint(1, 150)
+        store    = random.randint(1, 4)
 
         cursor.execute(f"""
             INSERT INTO 
@@ -76,19 +76,47 @@ def generateOrdersTable(AMOUNT_OF_ORDERS, MAX_ARTICLES_BOUGHT):
         """)
 
         for i in range(maxArticles):
-            article  = random.randint(1, 1000)
+            article  = random.randint(1, 100)
             cursor.execute(f"""
                 INSERT INTO
                     `OrdersArticles` (`order`, `article`, `amount`)
                     Values("{order}", "{article}", "{randomOneToFive()}")
                 """)
 
-def viewCustomerOrders():
+def viewOrdersArticles():
+    cursor.execute("""
+        CREATE VIEW `ordersandarticles` AS 
+            SELECT * FROM `Orders` 
+            INNER JOIN `OrdersArticles` ON Orders.orderid=OrdersArticles.order 
+            INNER JOIN `Articles` ON OrdersArticles.article=Articles.articleid;
+        """)
 
-    cursor.execute(f"""
-        CREATE VIEW CustomerOrders AS 
-        SELECT * FROM Customers 
-        INNER JOIN Orders ON Customers.customerid=Orders.customer;
+def queryAvgAge():
+    cursor.execute("""
+        SELECT AVG(Customers.age), Stores.name 
+        FROM Customers 
+        INNER JOIN ordersandarticles 
+        ON customerid=ordersandarticles.customer 
+        INNER JOIN Stores 
+        ON ordersandarticles.store=Stores.storeid 
+        GROUP BY Stores.name 
+        ORDER BY AVG(Customers.age);
+        """)
+
+def queryStores():
+    cursor.execute("""
+        SELECT name, address 
+        FROM Stores 
+        ORDER BY name;""")
+
+def queryCustomerCount():
+    cursor.execute("""
+        SELECT COUNT(customer), Stores.name 
+        FROM ordersandarticles 
+        INNER JOIN Stores 
+        ON ordersandarticles.store=Stores.storeid 
+        GROUP BY Stores.name 
+        ORDER BY COUNT(customer);
         """)
 
 # Creates tables for 'Stores' database.
@@ -189,14 +217,16 @@ except mysql.connector.Error as err:
         fillStoreTable(stores)
         fillCustomerTable(customers)
         fillArticleTable(articles)
-        generateOrdersTable(1000, 10)
+        generateOrdersTable(200, 10)
     else:
         print(err)
         exit(1)
 
 cnx.commit()
 
-viewCustomerOrders()
-
+queryCustomerCount()
+print(f"{'Column 1':10}\t{'Column 2':10}")
+for i in cursor:
+    print(f"{i['COUNT(customer)']:10}\t{i['name']:10}")
 cursor.close()
 cnx.close()

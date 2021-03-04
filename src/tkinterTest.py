@@ -8,6 +8,13 @@ def handle_click(event):
     print("The button was clicked!")
 
 window = tk.Tk()
+label = tk.Label(
+    text="Hello, Tkinter",
+    fg="white",
+    bg="black",
+    width=10,
+    height=10
+)
 
 button = tk.Button(master=window, text="Click me!")
 button.grid(row=0, column=0, sticky="nsew")
