@@ -26,7 +26,6 @@ def createTree(headingsList):
     # Creates a tree based on headings from headingsList.
     delete()
     tree["columns"] = tuple(range(len(headingsList)))
-    print(headingsList)
     for count, heading in enumerate(headingsList):
         tree.column(f"#{count+1}", width=round(400/len(headingsList)), anchor=tk.CENTER)
         tree.heading(f"#{count+1}", text=heading)
@@ -97,7 +96,6 @@ def stores():
     createTree(["Store", "Address"])
     queryStores()
     for row in cursor:
-        print(row) 
         tree.insert("", tk.END, values=row)        
 
 def averageAge():
