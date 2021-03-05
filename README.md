@@ -10,7 +10,7 @@
 
 ## Requirements:
 
-⋅⋅* Clone this repository.
+  * Clone this repository.
 
 ⋅⋅* MYSQL 8.x (tested on 8.0.23)
 
