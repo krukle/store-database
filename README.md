@@ -1,9 +1,12 @@
 # StoreDatabase
 
-## Author: Christoffer Eid
-## Course: 1DV503
-## Teacher: Ilir Jusufi
-## Institute: Linnaeus University, Kalmar
+> Author: Christoffer Eid
+>
+> Course: 1DV503
+>
+> Teacher: Ilir Jusufi
+>
+> Institute: Linnaeus University, Kalmar
 
 # How to:
 ## ...run program:
