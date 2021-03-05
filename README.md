@@ -8,6 +8,14 @@
 >
 > Institute: Linnaeus University, Kalmar
 
+## Requirements:
+
+> Cloned this repository.
+>
+> MYSQL 8.x (tested on 8.0.23)
+>
+> Python 3.x (tested on 3.8.5)
+
 ## How to...
 ### ...run program:
 Run `runProgram.py` located in `/src` folder.
