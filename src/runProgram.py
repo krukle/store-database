@@ -36,12 +36,10 @@ def createTree(headingsList):
 def queryAvgAge():
     cursor.execute("""
         SELECT AVG(Customers.age), Stores.name 
-        FROM Customers 
-        INNER JOIN ordersandarticles 
-        ON customerid=ordersandarticles.customer 
-        INNER JOIN Stores 
-        ON ordersandarticles.store=Stores.storeid 
-        GROUP BY Stores.name 
+        FROM Stores 
+        JOIN Orders ON Orders.store=Stores.storeid 
+        JOIN Customers ON Orders.customer=Customers.customerid
+        GROUP BY store 
         ORDER BY AVG(Customers.age);
         """)
 
@@ -53,11 +51,10 @@ def queryStores():
 
 def queryCustomerCount():
     cursor.execute("""
-        SELECT COUNT(customer), Stores.name 
-        FROM ordersandarticles 
-        INNER JOIN Stores 
-        ON ordersandarticles.store=Stores.storeid 
-        GROUP BY Stores.name 
+        SELECT COUNT(customer), name 
+        FROM Orders 
+        JOIN Stores ON Orders.store=Stores.storeid 
+        GROUP BY store 
         ORDER BY COUNT(customer);
         """)
 
@@ -108,7 +105,7 @@ def customerCount():
         tree.insert("", tk.END, values=row)        
 
 def checkArticle():
-    createTree(["Product", "Price"])
+    createTree(["Product", "Price (sek)"])
     USER_INP = simpledialog.askinteger(title="Article ID",
                                   prompt="Enter a value (1-100)")
     queryHowMuch(USER_INP)
