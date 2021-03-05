@@ -71,13 +71,11 @@ def queryHowMuch(articleid):
 def queryOrder(orderid):
     if orderid in range(1, 201):
         cursor.execute(f"""
-            SELECT orderid, Customers.firstname, Customers.lastname 
-            FROM ordersandarticles 
+            SELECT Customers.customerid, Customers.firstname, Customers.lastname 
+            FROM Orders 
             INNER JOIN Customers 
             ON customer=Customers.customerid 
             WHERE orderid = {orderid}
-            GROUP BY orderid 
-            ORDER BY orderid;
         """)
 
 def queryShoppingCart(orderid):
@@ -88,7 +86,6 @@ def queryShoppingCart(orderid):
             WHERE orderid = {orderid} 
             ORDER BY name;
             """)
-
 
 #FUNCTIONS FOR BUTTONS
 #
@@ -119,7 +116,7 @@ def checkArticle():
         tree.insert("", tk.END, values=row)        
 
 def checkOrder():
-    createTree(["Order ID", "First Name", "Surname"])
+    createTree(["Customer ID", "First Name", "Surname"])
     USER_INP = simpledialog.askinteger(title="Order ID",
                                   prompt="Enter a value (1-200)")
     queryOrder(USER_INP)
