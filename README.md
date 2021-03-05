@@ -8,14 +8,14 @@
 >
 > Institute: Linnaeus University, Kalmar
 
-# How to:
-## ...run program:
+## How to:
+### ...run program:
 Run `runProgram.py` located in `/src` folder.
 
 Note: This automatically checks if database exists. If not; it will create database for you. 
 
-## ...just create database:
+### ...just create database:
 Run `createDatabase.py` located in `/src` folder.
 
-## Presentation video:
+### Presentation video:
 https://youtu.be/e8M7IrLe8Bs
