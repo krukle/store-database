@@ -7,7 +7,7 @@ from mysql.connector import errorcode
 from tkinter import ttk
 from tkinter import simpledialog
 import tkinter as tk
-import storesDb
+import createDatabase
 import time
 
 # Connection info

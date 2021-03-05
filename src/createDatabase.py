@@ -1,3 +1,6 @@
+# Author: Christoffer Eid
+# CE223AF@STUDENT.LNU.SE
+# Teacher: Ilir Jusufi
 from __future__ import print_function
 import mysql.connector
 import csv
