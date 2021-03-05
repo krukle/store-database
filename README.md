@@ -16,4 +16,3 @@ Run `createDatabase.py` located in `/src` folder.
 
 ## Presentation video:
 https://youtu.be/e8M7IrLe8Bs
-https://www.youtube.com/embed/e8M7IrLe8Bs
