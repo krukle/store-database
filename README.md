@@ -13,3 +13,7 @@ Note: This automatically checks if database exists. If not; it will create datab
 
 ## ...just create database:
 Run `createDatabase.py` located in `/src` folder.
+
+## Presentation video:
+https://youtu.be/e8M7IrLe8Bs
+https://www.youtube.com/embed/e8M7IrLe8Bs
