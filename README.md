@@ -8,7 +8,7 @@
 >
 > Institute: Linnaeus University, Kalmar
 
-## How to:
+## How to...
 ### ...run program:
 Run `runProgram.py` located in `/src` folder.
 
